@@ -11,39 +11,26 @@ class InstituteName extends Model
 
     private static $instituteName;
 
-    protected $fillable = [
-        'type_id',
-        'institute_name'
-        
-    ];
+    protected $fillable = ['type_id', 'institute_name'];
 
-    
-    public static function instituteNameSave( $request)
+    public static function instituteNameSave($request)
     {
-
-      
-        self::$instituteName                 = new InstituteName();
-        self::$instituteName->type_id        = $request->type_id;
+        self::$instituteName = new InstituteName();
+        self::$instituteName->type_id = $request->type_id;
         self::$instituteName->institute_name = $request->institute_name;
         self::$instituteName->save();
-
-       
     }
 
-    public static function updateData($request,$id)
-    {   
+    public static function updateData($request, $id)
+    {
         self::$instituteName = InstituteName::findOrFail($id);
-        self::$instituteName->type_id        = $request->type_id;
+        self::$instituteName->type_id = $request->type_id;
         self::$instituteName->institute_name = $request->institute_name;
         self::$instituteName->save();
-
-        
     }
 
     public function instituteType()
     {
-        return $this->belongsTo(InstituteType::class,'foreign_key');
+        return $this->belongsTo(InstituteType::class, 'type_id');
     }
-
-    
 }

@@ -15,48 +15,41 @@ class PageName extends Model
         'type_id',
         'institute_id',
         'version_id',
-        'page_name'
-        
+        'page_name',
     ];
 
-    
-    public static function pageNameSave( $request)
+    public static function pageNameSave($request)
     {
-
-      
-        self::$pageName               = new PageName();
-        self::$pageName->type_id      = $request->type_id;
+        self::$pageName = new PageName();
+        self::$pageName->type_id = $request->type_id;
         self::$pageName->institute_id = $request->institute_id;
-        self::$pageName->version_id   = $request->version_id;
-        self::$pageName->page_name    = $request->page_name;
+        self::$pageName->version_id = $request->version_id;
+        self::$pageName->page_name = $request->page_name;
         self::$pageName->save();
-
-       
     }
 
-    public static function updateData($request,$id)
-    {   
+    public static function updateData($request, $id)
+    {
         self::$pageName = PageName::findOrFail($id);
-        self::$pageName->type_id      = $request->type_id;
+        self::$pageName->type_id = $request->type_id;
         self::$pageName->institute_id = $request->institute_id;
-        self::$pageName->version_id   = $request->version_id;
-        self::$pageName->page_name    = $request->page_name;
+        self::$pageName->version_id = $request->version_id;
+        self::$pageName->page_name = $request->page_name;
         self::$pageName->save();
-        
     }
 
     public function instituteType()
     {
-        return $this->belongsTo(InstituteType::class);
+        return $this->belongsTo(InstituteType::class, 'type_id');
     }
 
     public function instituteName()
     {
-        return $this->belongsTo(InstituteName::class);
+        return $this->belongsTo(InstituteName::class, 'institute_id');
     }
 
     public function versionName()
     {
-        return $this->belongsTo(VersionName::class);
+        return $this->belongsTo(VersionName::class, 'version_id');
     }
 }

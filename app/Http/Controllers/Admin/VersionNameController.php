@@ -66,6 +66,13 @@ class VersionNameController extends Controller
         return redirect()->route('version-name-info.index')->with('success',' version Name Delete successfully');
     }
 
+    public function deleteMultiple(Request $request)
+    {
+        VersionName::whereIn('id',explode(",",$ids))->delete();
+        return response()->json(['status'=>true,'success'=>"Version Name deleted successfully."]);
+         
+    }
+
     public function getInstituteNameByInstituteType()
     {
         $this->id = $_GET['id'];

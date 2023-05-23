@@ -53,21 +53,21 @@ class Price extends Model
 
     public function instituteType()
     {
-        return $this->belongsTo(InstituteType::class);
+        return $this->belongsTo(InstituteType::class, 'type_id');
     }
 
     public function instituteName()
     {
-        return $this->belongsTo(InstituteName::class);
+        return $this->belongsTo(InstituteName::class, 'institute_id');
     }
 
     public function versionName()
     {
-        return $this->belongsTo(VersionName::class);
+        return $this->belongsTo(VersionName::class, 'version_id');
     }
 
     public function pageName()
     {
-        return $this->belongsTo(PageName::class);
+        return $this->belongsTo(PageName::class, 'page_id');
     }
 }

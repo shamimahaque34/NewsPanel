@@ -76,6 +76,14 @@ class PriceController extends Controller
         return redirect()->route('price-info.index')->with('success',' Price Delete successfully');
     }
 
+    public function deleteMultiple(Request $request)
+    {
+        $ids = $request->ids;
+        Price::whereIn('id',explode(",",$ids))->delete();
+        return response()->json(['status'=>true,'success'=>"Price deleted successfully."]);
+         
+    }
+
     public function getInstituteNameByInstituteType()
     {
         $this->id = $_GET['id'];

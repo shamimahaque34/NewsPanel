@@ -71,6 +71,14 @@ class PageNameController extends Controller
         return redirect()->route('page-name-info.index')->with('success',' Page Name Delete successfully');
     }
 
+    public function deleteMultiple(Request $request)
+    {
+        $ids = $request->ids;
+        PageName::whereIn('id',explode(",",$ids))->delete();
+        return response()->json(['status'=>true,'success'=>"Page Name deleted successfully."]);
+         
+    }
+
     public function getInstituteNameByInstituteType()
     {
         $this->id = $_GET['id'];

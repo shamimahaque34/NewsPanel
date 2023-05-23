@@ -54,7 +54,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Version Name</label>
                             
-                                <select class="form-control" name="version_id" required id="versionName" onchange="getpageNameByversionName(this.value)">
+                                <select class="form-control" name="version_id"  id="versionName" onchange="getpageNameByversionName(this.value)">
                                     <option value="" selected disabled>-- Select Version Name --</option>
                                     @foreach($versionNames as $versionName)
                                     <option value="{{$versionName->id}}" >{{ $versionName->version_name}}</option>
@@ -67,7 +67,7 @@
                         <div class="col-md-6">
                             <label class="form-label">Page Name</label>
                             
-                                <select class="form-control" name="page_id" required id="pageName">
+                                <select class="form-control" name="page_id"  id="pageName">
                                     <option value="" selected disabled>-- Select Page Name --</option>
                                     @foreach($pageNames as $pageName)
                                     <option value="{{$pageName->id}}">{{ $pageName->page_name}}</option>

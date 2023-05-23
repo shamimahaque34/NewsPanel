@@ -63,4 +63,12 @@ class InstituteNameController extends Controller
         $this->instituteName->delete();
         return redirect()->route('institute-name-info.index')->with('success',' institute Name Delete successfully');
     }
+
+    public function deleteMultiple(Request $request)
+    {
+        $ids = $request->ids;
+        InstituteName::whereIn('id',explode(",",$ids))->delete();
+        return response()->json(['status'=>true,'success'=>"Institute Name deleted successfully."]);
+         
+    }
 }

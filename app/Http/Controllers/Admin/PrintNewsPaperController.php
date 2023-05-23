@@ -10,6 +10,7 @@ use App\Models\PrintNewsPaper;
 class PrintNewsPaperController extends Controller
 {
     protected $printNewsPapers;
+    private static $printNewsPaper;
 
     public function managePrintNewsPaper()
     {
@@ -18,11 +19,28 @@ class PrintNewsPaperController extends Controller
     }
 
 
-    public function updateStatus($id)
-    {
-        return redirect()->back()->with('message', PrintNewsPaper::updatePrintNewsPaperStatus($id));
-    }
+    // public function updateStatus($id)
+    // {
+    //     return redirect()->back()->with('message', PrintNewsPaper::updatePrintNewsPaperStatus($id));
+    // }
 
+    public static function updateStatus($id)
+    {
+        self::$printNewsPaper = PrintNewsPaper::find($id);
+        if (self::$printNewsPaper->status == 0)
+        {
+            self::$printNewsPaper->status = 1;
+        }
+        else
+        {
+            self::$printNewsPaper->status = 0;
+            
+        }
+        self::$printNewsPaper->save();
+        return redirect()->back()->with('success', 'Print News Paper  info status update successfully');
+
+        
+    }
     public function delete($id)
     {  
 
@@ -34,6 +52,14 @@ class PrintNewsPaperController extends Controller
 
         $this->printNewsPaper->delete();
         return redirect()->back()->with('success', 'Print News Paper info delete successfully');
+    }
+
+    public function deleteMultiple(Request $request)
+    {
+        $ids = $request->ids;
+        PrintNewsPaper::whereIn('id',explode(",",$ids))->delete();
+        return response()->json(['status'=>true,'success'=>"Print News Paper deleted successfully."]);
+         
     }
 
     public function download(Request $request, $file)

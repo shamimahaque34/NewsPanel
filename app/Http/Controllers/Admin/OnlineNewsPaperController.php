@@ -10,6 +10,7 @@ use App\Models\OnlineNewsPaper;
 class OnlineNewsPaperController extends Controller
 {
     protected $onlineNewsPapers;
+    private static $onlineNewsPaper;
 
     public function manageOnlineNewsPaper()
     {
@@ -18,10 +19,10 @@ class OnlineNewsPaperController extends Controller
     }
 
 
-    public function updateStatus($id)
-    {
-        return redirect()->back()->with('message', OnlineNewsPaper::updateOnlineNewsPaperStatus($id));
-    }
+    // public function updateStatus($id)
+    // {
+    //     return redirect()->back()->with('message', OnlineNewsPaper::updateOnlineNewsPaperStatus($id));
+    // }
 
     public function delete($id)
     {  
@@ -36,11 +37,37 @@ class OnlineNewsPaperController extends Controller
         return redirect()->back()->with('success', 'Online News Paper info delete successfully');
     }
 
+    public function deleteMultiple(Request $request)
+    {
+        $ids = $request->ids;
+        OnlineNewsPaper::whereIn('id',explode(",",$ids))->delete();
+        return response()->json(['status'=>true,'success'=>"Online News Paper deleted successfully."]);
+         
+    }
+
     public function download(Request $request, $file)
    
     {
         
         return response()->download(public_path($file));
+    }
+
+    public static function updateStatus($id)
+    {
+        self::$onlineNewsPaper = OnlineNewsPaper::find($id);
+        if (self::$onlineNewsPaper->status == 0)
+        {
+            self::$onlineNewsPaper->status = 1;
+        }
+        else
+        {
+            self::$onlineNewsPaper->status = 0;
+            
+        }
+        self::$onlineNewsPaper->save();
+        return redirect()->back()->with('success', 'Online News Paper  info status update successfully');
+
+        
     }
 
 

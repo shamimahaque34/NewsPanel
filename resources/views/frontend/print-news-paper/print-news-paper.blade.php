@@ -190,7 +190,7 @@ Limelight
 						@foreach($instituteNames as $instituteName)
 						<div class="form-check" style="margin-bottom: 15px">
 
-						<input class="form-check-input checkbox " type="checkbox" class="education" name="institute_id" value="{{$instituteName->id}}" id="" onclick="getversionNameByinstituteName(this.value)">
+						<input class="form-check-input checkbox " type="checkbox" class="education" name="newspaper_name[]" value="{{$instituteName->id}}" id="instituteName" onclick="getversionNameByinstituteName(this.value)">
 						<label class="form-check-label w-bold text-muted " for="">
 						 {{$instituteName->institute_name}}
 						</label>
@@ -205,10 +205,10 @@ Limelight
                 <label for="" class="fw-bold text-muted fs-6"> Version Name
                   *</label>
 				 
-                         <select class="form-control" name="version_id" required id="versionName"  onchange="getpageNameByversionName(this.value)">
+                         <select class="form-control" name="version" required id="versionName"  onchange="getpageNameByversionName(this.value)">
 							<option value="" selected disabled>-- Select Version  Name --</option>
 							@foreach($versionNames as $versionName)
-							<option value="{{$versionName->id}}">{{ $versionName->version_name}}</option>
+							<option value="{{$versionName->version_name}}">{{ $versionName->version_name}}</option>
 							@endforeach
 						</select> 
 
@@ -219,10 +219,10 @@ Limelight
 					<label for="" class="fw-bold text-muted fs-6">Page Name
 					  *</label>
 					 
-							 <select class="form-control" name="page_id" required id="pageName">
+							 <select class="form-control " name="page" required id="pageName">
 								<option value="" selected disabled>-- Select Page  Name --</option>
 								@foreach($pageNames as $pageName)
-								<option value="{{$pageName->id}}">{{ $pageName->page_name}}</option>
+								<option value="{{$pageName->page_name}}">{{ $pageName->page_name}}</option>
 								@endforeach
 							</select> 
 	
@@ -262,18 +262,20 @@ Limelight
                 {{-- @endforeach --}}
               </div>
 
+
+
               <div class="col-md-6" style="margin-bottom: 15px">
                 <label for="" class="fw-bold text-muted fs-6">Content Total Price
                   </label>
-                  <input type="number" name="content_price" id="content_price"  class="form-control mt-2 " value="" placeholder="" />
+                  <input type="text" name="content_price" id="content_price"  class="form-control mt-2 " value="" placeholder="" />
                   {{-- <input type="btn" value="Total Price" class="btn btn-primary mt-2" onclick="getTotal();"/> --}}
 
                   </div>
 
-              <div class="col-lg-6 "style="margin-bottom: 15px">
+              {{-- <div class="col-lg-6 "style="margin-bottom: 15px">
                 <label for="content_price_word" class="fw-bold text-muted fs-6">Content Total Price Word</label>
                 <input type="text" name="content_price_word" id="content_price_word" class="custom-input form-control shadow-none mt-2" value="" placeholder="">
-              </div>
+              </div> --}}
 
 			  <div class="col-lg-6 " style="margin-bottom: 15px">
                 <label for="" class="fw-bold text-muted fs-6 mb-2">Bkash Transaction Id *</label><br>
@@ -303,6 +305,8 @@ Limelight
     </div>
   </section>
 
+  <div id="hiddenInputDivs"></div>
+
   <!-- jQuery Link Starts Here -->
 
   <script src="{{asset('/')}}frontend/assets/js/jquery-3.5.1.min.js"></script>
@@ -325,7 +329,22 @@ Limelight
 <script>
     function getversionNameByinstituteName(id)
     {
-        $.ajax({
+		// $(document).ready(function(){
+		$('input[type = "checkbox"]').change(function(){
+			var id = $(this).val();
+
+			if(id ==""){
+				return false;
+			}
+
+			
+			
+
+			if($(this).prop("checked") == true){
+
+			
+					
+		 $.ajax({
             method: "GET",
             url: "{{url('/get-version-name-by-institute-name')}}",
             data: {id:id},
@@ -341,12 +360,55 @@ Limelight
                 select.append(option);
             }
         });
-    }
+	}
+
+	else{
+
+
+		$.ajax({
+            method: "GET",
+            url: "{{url('/get-version-name-by-institute-name')}}",
+            data: {id:id},
+            type: 'JSON',
+            success: function (response) {
+                var select = $('#versionName');
+                select.empty();
+                var option = '';
+                option += '<option value="" selected disabled> -- Select Version Name -- </option>';
+                
+                select.append(option);
+            }
+        });
+		
+        $.ajax({
+            method: "GET",
+            url: "{{url('/get-page-name-by-version-name')}}",
+            data: {id:id},
+            type: 'JSON',
+            success: function (response) {
+                var select = $('#pageName');
+                select.empty();
+                var option = '';
+                option += '<option value="" selected disabled> -- Select Page Name -- </option>';
+               
+                select.append(option);
+            }
+        });
+
+		
+	
+		$('#tvAppendId'+id).remove('');
+		withTotalPrice();
+	}
+    });
+	// });
+}
 </script>
 
 <script>
     function getpageNameByversionName(id)
-    {
+    { 
+		
         $.ajax({
             method: "GET",
             url: "{{url('/get-page-name-by-version-name')}}",
@@ -363,6 +425,7 @@ Limelight
                 select.append(option);
             }
         });
+	
     }
 </script>
 
@@ -406,7 +469,7 @@ Limelight
 
 				 $('#newspaper_price').val(input);
 				//  $('.item-total').val(input);
-				totalPrice();
+				totalPrice(id);
 
 
 				
@@ -429,19 +492,66 @@ Limelight
 </script> 
 
 <script>
-	function totalPrice()
+	function totalPrice(tvId)
 	{
 		var calc = 0;
 		$('.item-total').each(function(){
-			var val = $(this).val();
-			var sub =parseInt(calc) + parseInt(val);
-			calc =sub;
+			
+
+			    var newsPaperPrice = $(this).val();
+                var newsPaperBkashPercentage = $('#newspaper_bkash_percentage').val();
+                var bkash = Number(newsPaperPrice)*(Number(newsPaperBkashPercentage)/1000);
+                var totalPrice = (Number(newsPaperPrice) + Number(bkash));
+                // var sub= $('#content_price').val(totalPrice);
+
+				$('#hiddenInputDivs').append('<input type="hidden" id="tvAppendId'+tvId+'" class="total-price" value="'+totalPrice+'">');
+				 
 			
 		});
-		$('#content_price').val(calc) ;
+
+		withTotalPrice();
+		
 
 	}
+
+	function withTotalPrice()
+	{
+		var totalPaperPrice = 0;
+		$('.total-price').each(function() {
+			totalPaperPrice = Number(totalPaperPrice) + Number($(this).val()) ;
+		})
+		$('#content_price').val(totalPaperPrice);
+	}
+
+	
+	
 </script>
+
+
+{{-- <script>
+	function totalPrice()
+	{
+		var calc = $('#newspaper_price').val();
+		$('.item-total').each(function(){
+			// var val = $(this).val();
+			// var sub =parseInt(calc) + parseInt(val);
+			// calc =sub;
+
+			    var newsPaperPrice = $(this).val();
+                var newsPaperBkashPercentage = $('#newspaper_bkash_percentage').val();
+                var bkash = Number(newsPaperPrice)*(Number(newsPaperBkashPercentage)/1000);
+                var totalPrice = (Number(newsPaperPrice) + Number(bkash));
+                var sub= $('#content_price').val(totalPrice) ;
+
+				 
+			
+		});
+		// $('#content_price').val(calc) ;
+
+		calc = sub + calc;
+
+	}
+</script> --}}
 
 {{-- <script>
 	  if($('#versionName').text() = '';){
@@ -472,8 +582,8 @@ Limelight
                 var newsPaperPrice = document.getElementById('newspaper_price').value ;
                 var newsPaperBkashPercentage = document.getElementById('newspaper_bkash_percentage').value;
                 var bkash = Number(newsPaperPrice)*(Number(newsPaperBkashPercentage)/1000);
-                var totalPrice = (Number(newsPaperPrice) + Number(bkash))* Number(countNewspaper);
-                document.getElementById('content_price').value = totalPrice ;
+                var totalPrice = (Number(newsPaperPrice) + Number(bkash));
+                document.getElementById('content_price').value = parseInt(totalPrice) ;
               }
 
               else 
